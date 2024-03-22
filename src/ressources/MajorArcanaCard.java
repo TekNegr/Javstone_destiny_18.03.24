@@ -65,6 +65,9 @@ public class MajorArcanaCard extends Card{
     public void useSkill(Card targetCard){
         
     }
+
+    @Override
+    public void attackCard(Slot slotTarget){}
 }
 
 

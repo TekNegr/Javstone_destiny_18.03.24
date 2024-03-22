@@ -167,7 +167,8 @@ public class MinorArcanaCards extends Card{
     public void useSkill(Card targetCard){
         switch (this.suit) {
             case Suit.SWORDS:{
-                targetCard.varyDamage()
+                if(this.value.valueNumber> 10){
+                }
                 break;
             }
             case Suit.CUPS:{

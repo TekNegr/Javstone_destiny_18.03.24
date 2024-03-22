@@ -47,7 +47,9 @@ public class Deck extends Hand{
         Collections.addAll(mixedMajors, MajCards);
         Collections.shuffle(mixedMajors);
         MajCards = mixedMajors.toArray(new MajorArcanaCard[MajCards.length]);
-        return MajCards[0];
+        MajorArcanaCard drawnCard = MajCards[0];
+        this.removeCardbyObject(drawnCard);
+        return drawnCard;
     }
 
     public MinorArcanaCards drawMinor(){
