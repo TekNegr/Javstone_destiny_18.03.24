@@ -18,12 +18,11 @@ public class Game {
     //METHODS
     public void SetUpGame(){
         this.player1.setYouCard(drawingDeck.drawMajor());
-        drawingDeck.removeCardbyObject(player1.getYouCard());
         this.player2.setYouCard(drawingDeck.drawMajor());
         while(this.player1.getYouCard() == this.player2.getYouCard()){
+            this.drawingDeck.addCard(this.player2.getYouCard());
             this.player2.setYouCard(drawingDeck.drawMajor());
         }
-        drawingDeck.removeCardbyObject(player2.getYouCard());
         this.initDraw();
     }
 

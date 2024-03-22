@@ -42,7 +42,6 @@ public abstract class Card {
         PROTECT( "Protect");
         ;
 
-
         private String effectName;
         private int value;
 
@@ -52,8 +51,6 @@ public abstract class Card {
 
         public int getValue(){return this.value;}
     }
-
-
 
     // CONSTRUCTEUR
     public Card(String name, String destiny, int cost, int HP, boolean isMA, boolean isCharacter) {
