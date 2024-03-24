@@ -13,9 +13,9 @@ public abstract class Card {
     protected String Placement;
     protected int HealthPoint;
     protected Image image;
-    protected ArrayList<String> status;
+    protected ArrayList<Effect> status;
     protected boolean isMajorArcana;
-    protected Effect effect;
+    //protected Effect effect;
     protected boolean isCharacter;
     protected int damage;
 
@@ -41,11 +41,16 @@ public abstract class Card {
         PROTECT("Protect");
         ;
 
+        private Card originCard;
         private String effectName;
         private int value;
 
         Effect(String name) {
             this.effectName = name;
+        }
+
+        public void setOrigin(Card card){
+            this.originCard = card;
         }
 
         public void setValue(int v) {
@@ -87,8 +92,8 @@ public abstract class Card {
         return cost;
     }
 
-    public String[] getStats() {
-        return this.status.toArray(new String[this.status.size()]);
+    public Effect[] getStats() {
+        return this.status.toArray(new Effect[this.status.size()]);
     }
 
     public int getDamage() {
@@ -116,18 +121,41 @@ public abstract class Card {
         this.damage = dmg;
     }
 
+    public void hurt(int dmg){
+        if(!this.status.contains(Effect.IMMUNE)){
+            this.HealthPoint -= dmg;
+        }
+        if (this.status.contains(Effect.PROTECT)) {
+            Effect protectEffect = searchEffect(Effect.PROTECT);
+            if (protectEffect != null && protectEffect.originCard != null) {
+                protectEffect.originCard.hurt(dmg);
+                return;
+            }
+        }
+        
+    }
+
+    public Effect searchEffect(Effect effect) {
+        for (Effect tempEff : this.status) {
+            if (tempEff.equals(effect)) {
+                return tempEff;
+            }
+        }
+        return null;
+    }
+
     //// VARIER
 
     public void varyHealth(int delta) {
         this.HealthPoint += delta;
     }
 
-    public void addStats(String status) {
+    public void addStats(Effect status) {
         this.status.add(status);
     }
 
-    public void removeStats(String status) {
-        String[] statuses = this.getStats();
+    public void removeStats(Effect status) {
+        Effect[] statuses = this.getStats();
         for (int i = 0; i < statuses.length; i++) {
             if (statuses[i].equals(status)) {
                 this.status.remove(i);
@@ -158,7 +186,7 @@ public abstract class Card {
     // FONCTION ABSTRAITE D'ACTIVATION
     public abstract void placeCard(Slot placementSlot);
 
-    public abstract void useSkill(Card targetCard) throws Exception;
+    public abstract void useSkill(Card targetCard, Game game, PlayerHalf player) throws Exception;
 
-    public abstract void attackCard(Slot slotTarget);
+    public abstract void attackCard(Slot slotTarget, Game game, PlayerHalf player);
 }

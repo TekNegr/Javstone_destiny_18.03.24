@@ -58,16 +58,20 @@ public class MajorArcanaCard extends Card{
     // FONCTION ABSTRAITE D'ACTIVATION
     @Override
     public void placeCard(Slot placementSlot){
-        placementSlot.addCard(this);
-    }
-
-    @Override
-    public void useSkill(Card targetCard){
+        if(placementSlot.isEmpty()){
+            placementSlot.addCard(this);
+            this.addStats(Effect.STUN);
+        }
         
     }
 
     @Override
-    public void attackCard(Slot slotTarget){}
+    public void useSkill(Card targetCard, Game game, PlayerHalf player){
+        
+    }
+
+    @Override
+    public void attackCard(Slot slotTarget, Game game, PlayerHalf player){}
 }
 
 

@@ -20,6 +20,9 @@ public class Slot {
         return OnlyMajorArcana;
     }
 
+    public boolean isEmpty(){
+        return heldCard==null ? true : false;
+    }
 
     public void addCard(Card card){
         if(this.OnlyMajorArcana && !card.isMajorArcana)throw new IndexOutOfBoundsException();

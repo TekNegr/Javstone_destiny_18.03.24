@@ -38,7 +38,9 @@ public class Deck extends Hand{
     public Card drawCard(){
         this.shuffleDeck();
         this.shuffleDeck();
-        return this.hand[0];
+        Card drawnCard = this.hand[0];
+        this.removeCardbyObject(drawnCard);
+        return drawnCard;
     }
 
     public MajorArcanaCard drawMajor(){
@@ -58,7 +60,9 @@ public class Deck extends Hand{
         Collections.addAll(mixedMinors, MinCards);
         Collections.shuffle(mixedMinors);
         MinCards = mixedMinors.toArray(new MinorArcanaCards[MinCards.length]);
-        return MinCards[0];
+        MinorArcanaCards drawnCard = MinCards[0];
+        this.removeCardbyObject(drawnCard);
+        return drawnCard;
     }
     
 }

@@ -1,5 +1,7 @@
 package ressources;
 
+import java.util.Random;
+
 public class Game {
     PlayerHalf player1, player2;
     Deck drawingDeck;
@@ -9,8 +11,8 @@ public class Game {
 
     //CONSTRUCTOR
     public Game(){
-        this.player1 = new PlayerHalf("Player 1");
-        this.player2 = new PlayerHalf("Player 2");
+        this.player1 = new PlayerHalf("Player 1", this);
+        this.player2 = new PlayerHalf("Player 2", this);
         this.drawingDeck.populateDeck();
         this.SetUpGame();
     }
@@ -24,6 +26,33 @@ public class Game {
             this.player2.setYouCard(drawingDeck.drawMajor());
         }
         this.initDraw();
+    }
+
+    public PlayerHalf coinFlip() {
+        Random random = new Random();
+        int startingPlayerIndex = random.nextInt(2);
+        return startingPlayerIndex == 0 ? this.player1 : this.player2;
+    }    
+
+    public void StartGame(){
+        playTurn(coinFlip());
+    }
+
+    public void playTurn(PlayerHalf player){
+        boolean turnOver=false;
+        while(!this.gameEnded()){
+            while (!turnOver){
+
+            }
+            if(player == this.player1){
+                this.playTurn(this.player2);
+            }
+            else if(player == this.player2){
+                this.playTurn(this.player1);
+            }
+        }
+        
+        
     }
 
     public void initDraw(){

@@ -54,7 +54,10 @@ public class Hand {
      return handSize;
  }
 
-
+public void placeCard(Slot pSlot, int position){
+    hand[position].placeCard(pSlot);
+    removeCard(position);
+}
 
 
 }

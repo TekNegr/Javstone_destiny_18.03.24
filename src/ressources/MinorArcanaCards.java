@@ -158,26 +158,72 @@ public class MinorArcanaCards extends Card{
     // FONCTION ABSTRAITE D'ACTIVATION
     @Override
     public void placeCard(Slot placementSlot){
-        while(!placementSlot.acceptOnlyMaj()){
-            placementSlot.addCard(this);
+        if(!placementSlot.acceptOnlyMaj()){
+            if(placementSlot.isEmpty()){
+                placementSlot.addCard(this);
+                this.addStats(Effect.STUN);
+            }
         }
     }
 
     @Override
-    public void useSkill(Card targetCard){
+    public void useSkill(Card targetCard, Game game, PlayerHalf player){
+        Slot[] Player_Persons = player.getPersons_Field() ;
         switch (this.suit) {
             case Suit.SWORDS:{
                 if(this.value.valueNumber> 10){
+                    for ( Slot slot: Player_Persons) {
+                        slot.getCard().varyDamage((this.value.getValue() - 10) );
+                        //Give card's value - 10 of Damage to each card in player person field
+                    }
+                }
+                else{
+                    targetCard.varyDamage( this.value.getValue());
                 }
                 break;
             }
             case Suit.CUPS:{
+                if(this.value.valueNumber> 10){
+                    for ( Slot slot: Player_Persons) {
+                        slot.getCard().varyHealth((this.value.getValue() - 10) );
+                         //Give card's value - 10 of HP to each card in player person field
+                    }
+                }
+                else{
+                    targetCard.varyHealth(this.value.getValue());
+                }
+                   
                 break;
             }
             case Suit.PENTACLES:{
+                int givenMP =0;
+                if(this.value.valueNumber> 10){
+                    for ( Slot slot: Player_Persons){
+                        givenMP ++;
+                        givenMP += (this.value.getValue() - 10)/2;
+                    }
+                }
+                    //Give card's value - 10 of MP to the player
+                else{
+                    givenMP = this.value.getValue();
+                }
+                player.addMp(givenMP);
                 break;
             }
             case Suit.WANDS:{
+                int givenCards =0;
+                int givenMP =0;
+                if(this.value.valueNumber> 10){
+                    for ( Slot slot: Player_Persons){givenCards++;}
+                    givenMP = (this.value.getValue() -10)/2;
+                }
+                //Give +2 MP and draw the card's value - 10 for the player
+                else{
+                    givenCards=(this.value.getValue()/2) +1;
+                    givenMP=(this.value.getValue()/2) -1;
+                }
+                for(int i = 0; i< givenCards ;i++){player.drawFromDeck();}
+                player.addMp(givenMP);
                 break;
             }
             default:{
@@ -187,7 +233,18 @@ public class MinorArcanaCards extends Card{
     }
 
     @Override
-    public void attackCard(Slot slotTarget){
-
+    public void attackCard(Slot slotTarget, Game game, PlayerHalf player){
+        int restAtk = 0;
+        PlayerHalf opponent = game.player1.equals(player) ? game.player2 : game.player1;
+        if(!this.status.contains(Effect.STUN)){
+            if(this.isCharacter){
+                if(this.damage > slotTarget.getCard().getHealth()){
+                    restAtk = slotTarget.getCard().getHealth() - this.damage;
+                }
+                slotTarget.getCard().hurt(this.damage);
+                opponent.getYouCard().hurt(restAtk);
+            }
+        }
+        
     };
 }
