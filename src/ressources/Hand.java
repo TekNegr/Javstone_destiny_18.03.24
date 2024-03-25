@@ -2,13 +2,14 @@ package ressources;
 import java.util.ArrayList;
 public class Hand {
  // instance variables
+ protected Game game;
  protected int handSize;
  protected Card[] hand;
 
  // constructor
- public Hand(int size) {
-     handSize = size;
-     hand = new Card[handSize];
+ public Hand(int size, Game game) {
+    this.handSize = size;
+    this.hand = new Card[handSize];
  }
 
  // methods

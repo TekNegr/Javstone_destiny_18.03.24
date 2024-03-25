@@ -126,6 +126,7 @@ public class MinorArcanaCards extends Card{
 
     }
 
+    ///DMG setter
     public static int setDMGMinArc(Suit suit, Value value){
         int DMG;
         switch (value) {
@@ -169,11 +170,14 @@ public class MinorArcanaCards extends Card{
     @Override
     public void useSkill(Card targetCard, Game game, PlayerHalf player){
         Slot[] Player_Persons = player.getPersons_Field() ;
+        Effect used_effect;
         switch (this.suit) {
             case Suit.SWORDS:{
                 if(this.value.valueNumber> 10){
                     for ( Slot slot: Player_Persons) {
+                        used_effect = Effect.B_DMG;
                         slot.getCard().varyDamage((this.value.getValue() - 10) );
+                        slot.getCard().addStats(used_effect);
                         //Give card's value - 10 of Damage to each card in player person field
                     }
                 }
@@ -185,7 +189,9 @@ public class MinorArcanaCards extends Card{
             case Suit.CUPS:{
                 if(this.value.valueNumber> 10){
                     for ( Slot slot: Player_Persons) {
+                        used_effect = Effect.B_HEAL;
                         slot.getCard().varyHealth((this.value.getValue() - 10) );
+                        slot.getCard().addStats(used_effect);
                          //Give card's value - 10 of HP to each card in player person field
                     }
                 }
@@ -241,8 +247,8 @@ public class MinorArcanaCards extends Card{
                 if(this.damage > slotTarget.getCard().getHealth()){
                     restAtk = slotTarget.getCard().getHealth() - this.damage;
                 }
-                slotTarget.getCard().hurt(this.damage);
-                opponent.getYouCard().hurt(restAtk);
+                slotTarget.getCard().hurt(this.damage, this);
+                opponent.getYouCard().hurt(restAtk, this);
             }
         }
         

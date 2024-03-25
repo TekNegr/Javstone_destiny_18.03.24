@@ -18,27 +18,79 @@ public abstract class Card {
     //protected Effect effect;
     protected boolean isCharacter;
     protected int damage;
+    protected Game game;
 
     // enum of effects ? not sure what to do with it
-    protected enum Effect {
+    public enum Effect {
+
         DODGE("Dodge"),
+        IMMUNE("Immune"),
+        PROTECT("Protect"),
+        PARRY("Parry"),
+        ALONE("Immune until alone"),
+        SOLITUDE("Solitude"),
+        DEFLECT("Deflect"),
+        PEEP("Peep through opponent hand"),
+        REFLECT("REFLECT"),
+        ENEMY_ALLY( "Enemy Ally"),
+
         DAMAGE("Damage"),
+        DAMAGE_ALL("Damage all"),
+        BURNING_SURFACE("Burning Surface"),
+
         B_HEAL("Heal"),
         B_MP("Generate MP"),
         B_DMG("Boost Damage"),
-        B_RAND("Random Buff/Debuff"),
+        B_RAND("Random Buff"),
+        B_WAND("Boost Wand"),
+        B_SWORD( "Boost Sword" ),
+        B_PENT( "Boost Pentacle" ),
+        B_CUPS( "Boost Cups" ),
+        B_ALL("Boost all"),
+        B_WORLD("Boost of the world"),
+        B_SUN("Boost of the Sun"),
+        B_TEMP("Temperance boost"),
+        DISTANCE("Distance Boost"),
+        CRUMBLE("Crumbling"),
+        CUMULATE_MP("Cumulate MP"),
+        DEVIL_DEAL("Devilish deal"),
+        MOON_HEAL("Heal Moon"),
+        REMEMBER("Remember the fallen"),
+        B_TOWER("Boost Tower"),
+
+
         N_HEAL("Nerf Heal"),
         N_MP("Nerf MP"),
         N_DMG("Nerf Damage"),
-        IMMUNE("Immune"),
+        N_RAND( "Nerf Random"),
+        STAR_VUL("Star vulnerability"),
+
+        EMPTY_DRAW("Drawing advantage when empty handed"),
         DRAW("Draw"),
         DRAW_Min("Draw Minor Arcana"),
         DRAW_Maj("Draw Major Arcana"),
         STEAL("Steal Card"),
-        SPAWN("Spawn"),
-        STUN("Stun card"),
+        RETURN( "Return Card" ),
+        DISCARD( "Discard Card" ),
+        REPLACE("Replace Card"),
+
+        FREE_SPAWN("Next spawn is free"),
+        SPAWN_SELF("Spawn self"),
+        SPAWN_LOVER( "Spawn Lover" ),
+        SPAWN_STR("Spawn Strength"),
+        SPAWN_HERMIT( "Hermit Spawns Self" ),
+        SPAWN_MOON( "Spawn Moon" ),
+        REVIVE("Revive"),
+        GRAVE_ROB( "Rob GraveYard"),
+        
+
+        STUN("Stuned card"),
+        CONFUSE("Confuse/stun cards"),
         SACRIFICE("Sacrifice of card"),
-        PROTECT("Protect");
+        DEATH_DEAL("Deal with Death"),
+        SUICIDE("Suicide"),
+        ASSISTED_DEATH("Assisted death");
+        
         ;
 
         private Card originCard;
@@ -70,12 +122,18 @@ public abstract class Card {
         this.HealthPoint = HP;
         this.isMajorArcana = isMA;
         this.Placement = null;
+        this.status = new ArrayList<Effect>();
         this.isCharacter = isCharacter;
     }
+
+
+
 
     // GETTERS AND SETTERS
 
     //// GETTERS
+
+
     public int getHealth() {
         return HealthPoint;
     }
@@ -100,7 +158,15 @@ public abstract class Card {
         return this.damage;
     }
 
+    public boolean isCardAlone(PlayerHalf player){
+        return (player.getPersons_Field().length==1)? true:false;
+    }
+
     //// SETTERS
+    public void setGame(Game g){
+        this.game = g;
+    }
+
     public void varCost(int delta) {
         this.cost += delta;
     }
@@ -121,19 +187,39 @@ public abstract class Card {
         this.damage = dmg;
     }
 
-    public void hurt(int dmg){
+    public void hurt(int dmg, Card sender){
+        PlayerHalf player = this.game.player1.isCardInPersons(sender)? this.game.player2:this.game.player1;
+        PlayerHalf opponent = this.game.player1.isCardInPersons(sender)? this.game.player1:this.game.player2;
+        Random random = new Random();
         if(!this.status.contains(Effect.IMMUNE)){
-            this.HealthPoint -= dmg;
-        }
-        if (this.status.contains(Effect.PROTECT)) {
-            Effect protectEffect = searchEffect(Effect.PROTECT);
-            if (protectEffect != null && protectEffect.originCard != null) {
-                protectEffect.originCard.hurt(dmg);
-                return;
+            if (this.status.contains(Effect.PROTECT)) {
+                Effect protectEffect = searchEffect(Effect.PROTECT);
+                if (protectEffect != null && protectEffect.originCard != null) {
+                    protectEffect.originCard.hurt(dmg, this);
+                }
             }
+            else if (this.status.contains(Effect.PARRY)){
+                    sender.hurt(dmg/2, this);
+            }
+            else if(this.status.contains(Effect.DEFLECT)){
+                opponent.damageAll(dmg, this);
+                
+            }
+            else if(player.isEffectInPersons(Effect.PROTECT)){
+                player.getCardWithEffect(Effect.PROTECT).hurt(dmg,sender);
+            }
+            else{
+                
+                this.HealthPoint -= dmg;
+            }
+        }
+        if(this.HealthPoint == 0){
+            this.die();
         }
         
     }
+
+
 
     public Effect searchEffect(Effect effect) {
         for (Effect tempEff : this.status) {
@@ -144,6 +230,9 @@ public abstract class Card {
         return null;
     }
 
+    public void die(){
+        //Ajouter logique de mort
+    }
     //// VARIER
 
     public void varyHealth(int delta) {
@@ -184,9 +273,18 @@ public abstract class Card {
     }
 
     // FONCTION ABSTRAITE D'ACTIVATION
+    //Place carte dans un slot
     public abstract void placeCard(Slot placementSlot);
 
+    //Active le skill d'une carte
     public abstract void useSkill(Card targetCard, Game game, PlayerHalf player) throws Exception;
 
+    //Attack une autre carte si c'est un character
     public abstract void attackCard(Slot slotTarget, Game game, PlayerHalf player);
+
+    public void removeStats(){
+        this.status = new ArrayList<Effect>();
+    }
+
+
 }

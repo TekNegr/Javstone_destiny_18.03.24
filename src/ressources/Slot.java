@@ -24,6 +24,10 @@ public class Slot {
         return heldCard==null ? true : false;
     }
 
+    public String getslotType(){
+        return this.slotType;
+    }
+
     public void addCard(Card card){
         if(this.OnlyMajorArcana && !card.isMajorArcana)throw new IndexOutOfBoundsException();
         else{

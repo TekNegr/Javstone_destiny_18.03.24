@@ -6,8 +6,8 @@ import java.util.Collections;
 public class Deck extends Hand{
 
     //CONSTRUCTEUR
-    public Deck(){
-        super(78);
+    public Deck(Game game){
+        super(78, game);
     }
 
 
@@ -17,6 +17,9 @@ public class Deck extends Hand{
         Card[] MajCards= MajorArcanaCard.populateWithMajCards();
         this.hand = this.mixCards(MinCards, MajCards);
         this.shuffleDeck();
+        for(Card card: this.hand){
+            card.setGame(this.game);
+        }
     }
 
     public Card[] mixCards(Card[] d1, Card[] d2){
